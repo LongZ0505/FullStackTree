@@ -1,0 +1,14 @@
+server:
+  port: 8083
+  servlet:
+    context-path: /chat
+spring:
+  application:
+    name: chat-service
+  data:
+    mongodb:
+      uri: mongodb://root:root@localhost:27017/chat-serviceSocial?authSource=admin
+app:
+  services:
+    identity: http://localhost:8080/identity
+    follow: http://localhost:8082/follow

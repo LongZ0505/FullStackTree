@@ -1,0 +1,15 @@
+server:
+  port: 8082
+  servlet:
+    context-path: /follow
+spring:
+  application:
+    name: follow-service
+  neo4j:
+    uri: bolt://localhost:7687
+    authentication:
+      username: neo4j
+      password: 12345678
+app:
+  services:
+    url: http://localhost:8080/identity
