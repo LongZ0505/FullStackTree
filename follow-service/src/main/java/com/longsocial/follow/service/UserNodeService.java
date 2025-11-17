@@ -14,6 +14,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -62,6 +63,8 @@ public class UserNodeService {
         var toId = request.getToNodeId();
         var type = request.getType();
         RelationProjection  result = null;
+        boolean sameGen=false;
+        int generationNumber=0;
         switch (request.getType()) {
             case "FATHER_SON":
                 result = userNodeRepository.createFatherSonRelationship(fromId, toId);
@@ -71,15 +74,34 @@ public class UserNodeService {
                 break;
             case "SOUSE":
                 result = userNodeRepository.createSouseRelationship(fromId, toId);
+                sameGen=true;
                 break;
             case "BROTHER_SISTER":
                 result = userNodeRepository.createBrotherSisterRelationship(fromId, toId);
+                sameGen=true;
                 break;
             default:
                 throw new IllegalArgumentException("Loại quan hệ không hợp lệ: " + type);
 
         }
-
+        if(sameGen){
+            if(Strings.isEmpty(userNodeRepository.
+                    findById(fromId).get().getGeneration())){
+                var form=userNodeRepository.findById(toId).get().getGeneration();
+                generationNumber=Integer.parseInt(form);
+                userNodeRepository.updateGenetation(fromId,String.valueOf(generationNumber));
+            }
+            else {
+                var form = userNodeRepository.findById(fromId).get().getGeneration();
+                generationNumber = Integer.parseInt(form);
+                userNodeRepository.updateGenetation(toId,String.valueOf(generationNumber));
+            }
+        }
+        else{
+            var form = userNodeRepository.findById(fromId).get().getGeneration();
+            generationNumber = Integer.parseInt(form)+1;
+            userNodeRepository.updateGenetation(toId,String.valueOf(generationNumber));
+        }
         return RelationResponse.builder()
                 .toNodeId(toId)
                 .fromNodeId(fromId)

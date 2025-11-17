@@ -68,7 +68,7 @@ public interface UserNodeRepository extends Neo4jRepository<UserNode, String> {
             " r.followTimestamp desc limit $limit")
     List<RelationResponse> getRecentFollowed(Integer userId, int limit);
 
-//    @Query("MATCH (a:IndividualsNode {id: $fromNodeId}) " +
+    //    @Query("MATCH (a:IndividualsNode {id: $fromNodeId}) " +
 //            "MATCH (b:IndividualsNode {id: $toNodeId}) " +
 //            "MERGE (a)-[r:SOUSE]->(b) " +
 //            "RETURN a.id AS fromNodeId,  " +
@@ -100,12 +100,14 @@ public interface UserNodeRepository extends Neo4jRepository<UserNode, String> {
 //            "       toString(id(r)) AS id,  " +
 //            "       type(r) AS type")
 //    RelationResponse createFatherSonRelationship(String fromNodeId, String toNodeId);
+    @Query("MATCH (a:IndividualsNode {id: $id}) " +
+            "SET a.generation = $generation ")
+    void updateGenetation(String id, String generation);
 
     @Query("""
                 MATCH (a:IndividualsNode {id: $fromNodeId})
                 MATCH (b:IndividualsNode {id: $toNodeId})
                 MERGE (a)-[r:SOUSE]->(b)
-                
                 RETURN {id: toString(id(r)), fromNodeId: a.id, toNodeId: b.id, type: type(r)} AS result
             """)
     RelationProjection createSouseRelationship(String fromNodeId, String toNodeId);
@@ -114,7 +116,7 @@ public interface UserNodeRepository extends Neo4jRepository<UserNode, String> {
                 MATCH (a:IndividualsNode {id: $fromNodeId})
                 MATCH (b:IndividualsNode {id: $toNodeId})
                 MERGE (a)-[r:BROTHER_SISTER]->(b)
-           
+            
                 RETURN {id: toString(id(r)), fromNodeId: a.id, toNodeId: b.id, type: type(r)} AS result
             """)
     RelationProjection createBrotherSisterRelationship(String fromNodeId, String toNodeId);
@@ -146,11 +148,12 @@ public interface UserNodeRepository extends Neo4jRepository<UserNode, String> {
 
     @Query("MATCH (n:IndividualsNode) RETURN n")
     List<UserNode> findAllNodes();
+
     @Query("""
                 MATCH ()-[r]->()
                 WHERE id(r) = $id
                 DELETE r
             """)
-    void  deleteRelation(long id);
+    void deleteRelation(long id);
 }
 
