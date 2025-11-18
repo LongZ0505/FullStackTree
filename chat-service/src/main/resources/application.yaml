@@ -7,7 +7,7 @@ spring:
     name: chat-service
   data:
     mongodb:
-      uri: mongodb://root:root@localhost:27017/chat-serviceSocial?authSource=admin
+      uri: mongodb://root:root@localhost:27017/chat-Tree?authSource=admin
 app:
   services:
     identity: http://localhost:8080/identity

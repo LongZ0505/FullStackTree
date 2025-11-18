@@ -12,5 +12,4 @@ import java.time.LocalDate;
 @Builder
 public class UserResponse {
     String name;
-
 }

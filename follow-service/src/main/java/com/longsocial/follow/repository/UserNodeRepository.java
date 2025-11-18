@@ -3,6 +3,7 @@ package com.longsocial.follow.repository;
 import com.longsocial.follow.dto.request.UserNodeRequest;
 import com.longsocial.follow.dto.response.RelationProjection;
 import com.longsocial.follow.dto.response.RelationResponse;
+import com.longsocial.follow.dto.response.UserNodeResponse;
 import com.longsocial.follow.entity.FollowRelation;
 import com.longsocial.follow.entity.UserNode;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
@@ -20,7 +21,7 @@ import java.util.Set;
 
 @Repository
 public interface UserNodeRepository extends Neo4jRepository<UserNode, String> {
-    @Query("MATCH (a:UserNode {userId:$userId}) return a")
+    @Query("MATCH (a:IndividualsNode {userId:$userId}) return a")
     UserNode findByUserId(String userId);
 
     @Query("MATCH (a:IndividualsNode {id: $id}) " +
@@ -34,73 +35,7 @@ public interface UserNodeRepository extends Neo4jRepository<UserNode, String> {
                 @Param("dod") LocalDate dod,
                 @Param("sex") boolean sex);
 
-    @Query("MATCH (a:UserNode {userId:$userId})-[:FOLLOWS]->(b:UserNode)" +
-            "RETURN b")
-    List<UserNode> getFollowees(@Param("userId") Integer userId);
-
-    @Query("MATCH (a:UserNode {userId:$userId})-[r:FOLLOWS]->(b:UserNode)" +
-            "RETURN r")
-    Set<FollowRelation> getFolloweesRelation(@Param("userId") Integer userId);
-
-    @Query("MATCH (a:UserNode)-[:FOLLOWS]->(b:UserNode {userId:$userId})" +
-            "RETURN a")
-    List<UserNode> getFollowers(@Param("userId") Integer userId);
-
-    @Query("MATCH (a:UserNode{userId:$userId1})-[:FOLLOWS]->(c:UserNode)" +
-            "<-[:FOLLOWS]-(b:UserNode {userId:$userId2}) RETURN c")
-    List<UserNode> getMutualFriend(@Param("userId1") Integer userId1, @Param("userId2") Integer userId2);
-
-    @Query("MATCH (a:UserNode {userId: $followerId}), (b:UserNode {userId: $followeeId}) " +
-            "MERGE (a)-[r:FOLLOWS]->(b) " +
-            "SET r.followTimestamp = $timestamp")
-    Optional<UserNode> createRelation(String followerId, String followeeId, Instant timestamp);
-
-    @Query("MATCH(a:UserNode {userId:$followerId})-[r:FOLLOWS]->(b:UserNode {userId:$followeeId})" +
-            "DELETE r")
-    void deleteRelationship(String followerId, String followeeId);
-
-    @Query("MATCH (a:UserNode {userId:$followerId})-[r:FOLLOWS]->(b:UserNode {userId:$followeeId})" +
-            "RETURN COUNT(*)>0")
-    Boolean checkFollowing(@Param("followerId") String followerId, @Param("followeeId") String followeeId);
-
-    @Query("MATCH (a:UserNode)-[r:FOLLOWS]->(b:UserNode {userId: $userId}) return a, r.followTimestamp as followTimestamp" +
-            " order by" +
-            " r.followTimestamp desc limit $limit")
-    List<RelationResponse> getRecentFollowed(Integer userId, int limit);
-
-    //    @Query("MATCH (a:IndividualsNode {id: $fromNodeId}) " +
-//            "MATCH (b:IndividualsNode {id: $toNodeId}) " +
-//            "MERGE (a)-[r:SOUSE]->(b) " +
-//            "RETURN a.id AS fromNodeId,  " +
-//            "       b.id AS toNodeId,  " +
-//            "       toString(id(r)) AS id,  " +
-//            "       type(r) AS type")
-//    RelationResponse createSouseRelationship(String fromNodeId, String toNodeId);
-//    @Query("MATCH (a:IndividualsNode {id: $fromNodeId}) " +
-//            "MATCH (b:IndividualsNode {id: $toNodeId}) " +
-//            "MERGE (a)-[r:BROTHER_SISTER]->(b) " +
-//            "RETURN a.id AS fromNodeId,  " +
-//            "       b.id AS toNodeId,  " +
-//            "       toString(id(r)) AS id,  " +
-//            "       type(r) AS type")
-//    RelationResponse createBrotherSisterRelationship(String fromNodeId, String toNodeId);
-//    @Query("MATCH (a:IndividualsNode {id: $fromNodeId}) " +
-//            "MATCH (b:IndividualsNode {id: $toNodeId}) " +
-//            "MERGE (a)-[r:MOTHER_SON]->(b) " +
-//            "RETURN a.id AS fromNodeId,  " +
-//            "       b.id AS toNodeId,  " +
-//            "       toString(id(r)) AS id,  " +
-//            "       type(r) AS type")
-//    RelationResponse createMotherSonRelationship(String fromNodeId, String toNodeId);
-//    @Query("MATCH (a:IndividualsNode {id: $fromNodeId}) " +
-//            "MATCH (b:IndividualsNode {id: $toNodeId}) " +
-//            "MERGE (a)-[r:FATHER_SON]->(b) " +
-//            "RETURN a.id AS fromNodeId,  " +
-//            "       b.id AS toNodeId,  " +
-//            "       toString(id(r)) AS id,  " +
-//            "       type(r) AS type")
-//    RelationResponse createFatherSonRelationship(String fromNodeId, String toNodeId);
-    @Query("MATCH (a:IndividualsNode {id: $id}) " +
+   @Query("MATCH (a:IndividualsNode {id: $id}) " +
             "SET a.generation = $generation ")
     void updateGenetation(String id, String generation);
 
@@ -155,5 +90,11 @@ public interface UserNodeRepository extends Neo4jRepository<UserNode, String> {
                 DELETE r
             """)
     void deleteRelation(long id);
+    @Query("""
+            MATCH (u:IndividualsNode)
+            RETURN u
+            ORDER BY u.generation asc;
+            """)
+    List<UserNode> findAllByGenerationAsc();
 }
 

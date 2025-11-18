@@ -69,6 +69,12 @@ public class UserNodeController {
                 .result(userNodeService.getAllUserNode())
                 .build();
     }
+    @GetMapping("/allNode")
+    public  ApiResponse<List<UserNodeResponse>> getAllNodes(){
+        return ApiResponse.<List<UserNodeResponse>>builder()
+                .result(userNodeService.getAllNodes())
+                .build();
+    }
     @DeleteMapping("/ralations/{relationId}")
     public ApiResponse<?> deleteRelation(@PathVariable("relationId") long relationId){
         log.info("id: ",relationId);

@@ -1,14 +1,15 @@
-package com.group.identity_service.dto.response;
+package com.longsocial.chat.dto.response;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Data
 @Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserNodeResponse {
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class ChatPageResponse {
     String id;
     String name;
+    String lastMessage;
 }

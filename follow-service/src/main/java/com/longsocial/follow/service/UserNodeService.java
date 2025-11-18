@@ -26,7 +26,6 @@ import java.util.*;
 public class UserNodeService {
     UserNodeRepository userNodeRepository;
     UserNodeMapper userNodeMapper;
-    IdentityClient identityClient;
 
     public UserNodeResponse createUserNode(UserNodeRequest request) {
         log.info(request.toString());
@@ -42,29 +41,15 @@ public class UserNodeService {
 
 
 
-    // testing follow
-//
-//        // Chuyển đổi Map trả về từ query sang DTO
-
-
-//    public String unfollow(RelationRequest request) {
-//        userNodeRepository.deleteRelationship(request.getFollowerId(), request.getFolloweeId());
-//        return "User " + request.getFollowerId() + " has just unFollowed " +
-//                request.getFolloweeId() + " at " + request.getFollowTimestamp();
-//    }
-
-    public void createNode() {
-
-    }
 
     //Update Generation in case
     public RelationResponse creationRelation(RelationRequest request) {
         var fromId = request.getFromNodeId();
         var toId = request.getToNodeId();
         var type = request.getType();
-        RelationProjection  result = null;
-        boolean sameGen=false;
-        int generationNumber=0;
+        RelationProjection result = null;
+        boolean sameGen = false;
+        int generationNumber = 0;
         switch (request.getType()) {
             case "FATHER_SON":
                 result = userNodeRepository.createFatherSonRelationship(fromId, toId);
@@ -74,33 +59,31 @@ public class UserNodeService {
                 break;
             case "SOUSE":
                 result = userNodeRepository.createSouseRelationship(fromId, toId);
-                sameGen=true;
+                sameGen = true;
                 break;
             case "BROTHER_SISTER":
                 result = userNodeRepository.createBrotherSisterRelationship(fromId, toId);
-                sameGen=true;
+                sameGen = true;
                 break;
             default:
                 throw new IllegalArgumentException("Loại quan hệ không hợp lệ: " + type);
 
         }
-        if(sameGen){
-            if(Strings.isEmpty(userNodeRepository.
-                    findById(fromId).get().getGeneration())){
-                var form=userNodeRepository.findById(toId).get().getGeneration();
-                generationNumber=Integer.parseInt(form);
-                userNodeRepository.updateGenetation(fromId,String.valueOf(generationNumber));
-            }
-            else {
+        if (sameGen) {
+            if (Strings.isEmpty(userNodeRepository.
+                    findById(fromId).get().getGeneration())) {
+                var form = userNodeRepository.findById(toId).get().getGeneration();
+                generationNumber = Integer.parseInt(form);
+                userNodeRepository.updateGenetation(fromId, String.valueOf(generationNumber));
+            } else {
                 var form = userNodeRepository.findById(fromId).get().getGeneration();
                 generationNumber = Integer.parseInt(form);
-                userNodeRepository.updateGenetation(toId,String.valueOf(generationNumber));
+                userNodeRepository.updateGenetation(toId, String.valueOf(generationNumber));
             }
-        }
-        else{
+        } else {
             var form = userNodeRepository.findById(fromId).get().getGeneration();
-            generationNumber = Integer.parseInt(form)+1;
-            userNodeRepository.updateGenetation(toId,String.valueOf(generationNumber));
+            generationNumber = Integer.parseInt(form) + 1;
+            userNodeRepository.updateGenetation(toId, String.valueOf(generationNumber));
         }
         return RelationResponse.builder()
                 .toNodeId(toId)
@@ -112,23 +95,29 @@ public class UserNodeService {
 
     public TreeResponse getAllUserNode() {
         var nodes = userNodeRepository.findAllNodes();
-        var relations=userNodeRepository.findAllRelationships();
+        var relations = userNodeRepository.findAllRelationships();
         return TreeResponse.builder()
                 .nodes(nodes.stream().map(userNodeMapper::toUserNodeResponse).toList())
                 .relations(relations)
                 .build();
 
     }
-    public void deleteRelation(long relationId){
+
+    public List<UserNodeResponse> getAllNodes() {
+        var lstNode = userNodeRepository.findAllByGenerationAsc();
+        return lstNode.stream().map(userNodeMapper::toUserNodeResponse).toList();
+    }
+
+    public void deleteRelation(long relationId) {
         userNodeRepository.deleteRelation(relationId);
     }
 
-    public String updateUserNode(String id,UserNodeRequest request) {
-        var userNode= userNodeRepository.findById(id);
-        if(Objects.isNull(userNode))
+    public String updateUserNode(String id, UserNodeRequest request) {
+        var userNode = userNodeRepository.findById(id);
+        if (Objects.isNull(userNode))
             throw new AppException(ErrorCode.USER_NOT_EXISTED);
-        userNodeRepository.update(id,request.getName(),request.
-                getDob(),request.getDod(), request.isSex());
+        userNodeRepository.update(id, request.getName(), request.
+                getDob(), request.getDod(), request.isSex());
         return "You have just updated userNode: ";
     }
 

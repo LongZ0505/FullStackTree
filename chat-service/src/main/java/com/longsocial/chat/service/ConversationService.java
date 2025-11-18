@@ -1,6 +1,7 @@
 package com.longsocial.chat.service;
 
 import com.longsocial.chat.dto.request.CreationConversationRequest;
+import com.longsocial.chat.dto.response.ChatPageResponse;
 import com.longsocial.chat.dto.response.ConversationResponse;
 import com.longsocial.chat.entity.Conversation;
 import com.longsocial.chat.entity.ParticipantInfo;
@@ -74,13 +75,17 @@ public class ConversationService {
         return stringJoiner.toString();
     }
 
-    public ConversationResponse getById(String conversationId) {
-        var conversation=conversationRepository.findById(conversationId).
-                orElseThrow(()->new AppException(ErrorCode.UNAUTHENTICATED));
-        return conversationMapper.toResponse(conversation);
-    }
+//    public List<ChatPageResponse> getConversationById(String userId) {
+//        var conversation=conversationRepository.findById(conversationId).
+//                orElseThrow(()->new AppException(ErrorCode.UNAUTHENTICATED));
+//        return ChatPageResponse.builder()
+//                .id()
+//                .name()
+//                .lastMessage()
+//                .build();
+//    }
 
-    public List<ConversationResponse> fetchSessionsByUserId(Integer userId) {
+    public List<ConversationResponse> fetchSessionsByUserId(String userId) {
         var check = identityClient.getUserById(userId);
         log.info(check.getResult().getEmail());
         if(Objects.isNull(check)) throw new AppException(ErrorCode.USER_NOT_EXISTED);

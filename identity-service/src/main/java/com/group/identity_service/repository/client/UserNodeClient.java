@@ -8,9 +8,7 @@ import com.group.identity_service.dto.request.UserNodeRequest;
 import com.group.identity_service.dto.response.UserNodeResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 @FeignClient(name = "UserNode-client", url = "${app.services.follow}",
         configuration = AuthenticationRequestInterceptor.class)
@@ -19,7 +17,7 @@ public interface UserNodeClient {
     public ApiResponse<UserNodeResponse> createNode
             (@RequestBody UserNodeRequest request);
 
-    @PutMapping(value = "/internal/updateUserNode", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ApiResponse<?> updateInfor(@RequestBody UserNodeRequest request);
+    @GetMapping(value = "/userNode/getNode/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ApiResponse<UserNodeResponse> getNode(@PathVariable("userId") String userId);
 
 }

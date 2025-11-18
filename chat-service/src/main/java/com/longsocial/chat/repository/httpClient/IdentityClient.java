@@ -16,6 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
         configuration = AuthenticationRequestInterceptor.class)
 public interface IdentityClient {
     @GetMapping(value = "/users/userId/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ApiResponse<UserResponse> getUserById(@PathVariable("userId") Integer userId);
+    public ApiResponse<UserResponse> getUserById(@PathVariable("userId") String userId);
 
 }

@@ -18,7 +18,7 @@ public class ChatMessage {
     @MongoId
     String chatId;
     String conversationId;
-    Integer userId;
+    String userId;
     String message;
     Instant chatTimestamp;
 }

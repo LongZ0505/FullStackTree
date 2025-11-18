@@ -34,10 +34,10 @@ public class ChatController {
                 .build();
     }
 
-    @PostMapping("/new")
-    public ApiResponse<?> newChat(@RequestBody CreationChatMessageRequest request) throws JsonProcessingException {
-       return ApiResponse.builder()
-               .result(chatMessageService.create(request))
-               .build();
-    }
+//    @PostMapping("/new")
+//    public ApiResponse<?> newChat(@RequestBody CreationChatMessageRequest request) throws JsonProcessingException {
+//       return ApiResponse.builder()
+//               .result(chatMessageService.create(request))
+//               .build();
+//    }
 }

@@ -10,4 +10,5 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 public class AuthenticationResponse {
     String token;
+    UserNodeResponse user;
 }

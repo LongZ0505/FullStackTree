@@ -5,11 +5,13 @@ import com.group.identity_service.dto.request.LoginRequest;
 import com.group.identity_service.dto.request.RefreshRequest;
 import com.group.identity_service.dto.response.AuthenticationResponse;
 import com.group.identity_service.dto.response.IntrospectResponse;
+import com.group.identity_service.dto.response.UserNodeResponse;
 import com.group.identity_service.entity.InvalidToken;
 import com.group.identity_service.exception.AppException;
 import com.group.identity_service.exception.ErrorCode;
 import com.group.identity_service.repository.IdentityRepository;
 import com.group.identity_service.repository.InvalidTokenRepository;
+import com.group.identity_service.repository.client.UserNodeClient;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -48,7 +50,7 @@ public class AuthenticationService {
     InvalidTokenRepository invalidTokenRepository;
     IdentityRepository userRepository;
     PasswordEncoder passwordEncoder;
-
+    UserNodeClient userNodeClient;
     public IntrospectResponse introspect(IntrospectRequest request) throws ParseException, JOSEException {
         var valid = true;
         var check = verifier(request.getToken(), false);
@@ -70,7 +72,10 @@ public class AuthenticationService {
         if (!result) throw new AppException(ErrorCode.UNAUTHENTICATED);
         String token = generateToken(user.getId(), user.getUserName());
         log.info(token);
-        return AuthenticationResponse.builder().token(token).build();
+        return AuthenticationResponse.builder().token(token).user(UserNodeResponse.builder()
+                        .id(user.getId())
+                        .name(userNodeClient.getNode(user.getId()).getResult().getName())
+                .build()).build();
     }
 
     public String generateToken(String id, String userName) throws JOSEException {
