@@ -20,7 +20,7 @@ public class WebSocketSession {
 
     String socketSessionId;
 
-    Integer userId;
+    String userId;
 
     Instant createdAt;
 }

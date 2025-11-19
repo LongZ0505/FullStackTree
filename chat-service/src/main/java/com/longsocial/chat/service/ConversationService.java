@@ -10,6 +10,7 @@ import com.longsocial.chat.exception.ErrorCode;
 import com.longsocial.chat.mapper.ConversationMapper;
 import com.longsocial.chat.repository.ConversationRepository;
 import com.longsocial.chat.repository.httpClient.IdentityClient;
+import com.longsocial.chat.repository.httpClient.UserNodeClient;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -28,18 +29,19 @@ import java.util.StringJoiner;
 @Slf4j
 public class ConversationService {
     ConversationRepository conversationRepository;
-    IdentityClient identityClient;
+    UserNodeClient userNodeClient;
     ConversationMapper conversationMapper;
     ChatMessageService chatMessageService;
     public String create(CreationConversationRequest request) {
-        var userA=identityClient.getUserById(request.getParticipantIds().getFirst());
-        var userB=identityClient.getUserById(request.getParticipantIds().get(1));
+        var userA=userNodeClient.getNode(request.getParticipantIds().getFirst());
+        var userB=userNodeClient.getNode(request.getParticipantIds().get(1));
         if(Objects.isNull(userB)||Objects.isNull(userA))
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         var userAInfor=userA.getResult();
         var userBInfor=userB.getResult();
-
-        List<Integer> userIds = new ArrayList<>();
+        log.info("userA: {}",userA);
+        log.info("userB: {}",userB);
+        List<String> userIds = new ArrayList<>();
         userIds.add(userAInfor.getUserId());
         userIds.add(userBInfor.getUserId());
 
@@ -49,13 +51,11 @@ public class ConversationService {
                 .orElseGet(()->{ List<ParticipantInfo> participantInfos = List.of(
                         ParticipantInfo.builder()
                                 .userId(userAInfor.getUserId())
-                                .username(userAInfor.getUserName())
-                                .avatar(userAInfor.getAvatar())
+                                .name(userAInfor.getName())
                                 .build(),
                         ParticipantInfo.builder()
                                 .userId(userBInfor.getUserId())
-                                .username(userBInfor.getUserName())
-                                .avatar(userBInfor.getAvatar())
+                                .name(userBInfor.getName())
                                 .build()
                 );
         Conversation newConversation = Conversation.builder()
@@ -66,28 +66,24 @@ public class ConversationService {
         return conversationRepository.save(newConversation);});
        return con.getId();
     }
-    private String generateParticipantHash(List<Integer> ids) {
+    private String generateParticipantHash(List<String> ids) {
         StringJoiner stringJoiner = new StringJoiner("_");
-        ids.forEach(integer -> stringJoiner.add(integer.toString()));
-
+        ids.forEach(stringJoiner::add);
         // SHA 256
-
         return stringJoiner.toString();
     }
 
-//    public List<ChatPageResponse> getConversationById(String userId) {
-//        var conversation=conversationRepository.findById(conversationId).
-//                orElseThrow(()->new AppException(ErrorCode.UNAUTHENTICATED));
-//        return ChatPageResponse.builder()
-//                .id()
-//                .name()
-//                .lastMessage()
-//                .build();
-//    }
+    public ConversationResponse getConversationById(String  conversationId) {
+        var conversation=conversationRepository.findById(conversationId).
+                orElseThrow(()->new AppException(ErrorCode.UNAUTHENTICATED));
+        return ConversationResponse.builder()
+                .id(conversation.getId())
+                .participants(conversation.getParticipants())
+                .build();
+    }
 
     public List<ConversationResponse> fetchSessionsByUserId(String userId) {
-        var check = identityClient.getUserById(userId);
-        log.info(check.getResult().getEmail());
+        var check = userNodeClient.getNode(userId);
         if(Objects.isNull(check)) throw new AppException(ErrorCode.USER_NOT_EXISTED);
         var lstConversation=conversationRepository.findByParticipantsUserId(userId);
         return lstConversation.stream().map(conversation -> {

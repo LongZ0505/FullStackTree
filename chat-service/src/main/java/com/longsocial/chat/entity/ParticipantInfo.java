@@ -11,6 +11,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ParticipantInfo {
     String userId;
-    String username;
+    String name;
     String avatar;
 }

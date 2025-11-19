@@ -53,6 +53,7 @@ public class AuthenticationService {
     UserNodeClient userNodeClient;
     public IntrospectResponse introspect(IntrospectRequest request) throws ParseException, JOSEException {
         var valid = true;
+        log.info("toe:{}",request.getToken());
         var check = verifier(request.getToken(), false);
         if (Objects.isNull(check)) {
             valid = false;
@@ -123,7 +124,7 @@ public class AuthenticationService {
                 .plus(REFRESH_TIME, ChronoUnit.SECONDS).toEpochMilli()))
                 : signedJWT.getJWTClaimsSet().getExpirationTime();
         var verified = signedJWT.verify(jwsVerifier);
-        if (!verified || check.after(new Date())) {
+        if (!verified || !check.after(new Date())) {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
         if (invalidTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID())) {

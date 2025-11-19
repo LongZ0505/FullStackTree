@@ -35,8 +35,12 @@ public class UserNodeService {
         return userNodeMapper.toUserNodeResponse(userNode);
     }
 
-    public UserNodeResponse getNode(String userId) {
-        return userNodeMapper.toUserNodeResponse(userNodeRepository.findByUserId(userId));
+    public UserResponse getNode(String userId) {
+         var po=userNodeRepository.findByUserId(userId);
+         return UserResponse.builder()
+                 .userId(po.getUserId())
+                 .name(po.getName())
+                 .build();
     }
 
 
@@ -75,11 +79,23 @@ public class UserNodeService {
                 var form = userNodeRepository.findById(toId).get().getGeneration();
                 generationNumber = Integer.parseInt(form);
                 userNodeRepository.updateGenetation(fromId, String.valueOf(generationNumber));
-            } else {
+            } else if( Strings.isEmpty(userNodeRepository.
+                    findById(toId).get().getGeneration())) {
                 var form = userNodeRepository.findById(fromId).get().getGeneration();
                 generationNumber = Integer.parseInt(form);
                 userNodeRepository.updateGenetation(toId, String.valueOf(generationNumber));
+            } else{
+                var from = userNodeRepository.findById(fromId).get().getGeneration();
+                var to = userNodeRepository.findById(toId).get().getGeneration();
+                var genFrom=Integer.parseInt(from);
+                var genTo=Integer.parseInt(to);
+                if (genFrom < genTo) {
+                    userNodeRepository.updateGenetation(toId, String.valueOf(genFrom));
+                } else {
+                    userNodeRepository.updateGenetation(fromId, String.valueOf(genTo));
+                }
             }
+
         } else {
             var form = userNodeRepository.findById(fromId).get().getGeneration();
             generationNumber = Integer.parseInt(form) + 1;
@@ -123,5 +139,12 @@ public class UserNodeService {
 
     public void deleteNode(String id) {
         userNodeRepository.deleteById(id);
+    }
+
+    public List<UserResponse> queryUser(String query) {
+        var lstUser=userNodeRepository.selectAllByQuery(query);
+        return lstUser.stream().map(userNode ->
+                UserResponse.builder().name(userNode.getName())
+                        .userId(userNode.getUserId()).build()).toList();
     }
 }

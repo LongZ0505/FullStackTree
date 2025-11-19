@@ -9,5 +9,8 @@ import java.util.List;
 
 @Repository
 public interface ChatMessageRepository extends MongoRepository<ChatMessage,String> {
+    @Query(value = "{ 'conversationId' : ?0 }", sort = "{ 'chatTimestamp' : 1 }")
     List<ChatMessage> findByConversationIdOrderByChatTimestampDesc(String conversationId);
+    @Query(value = "{ 'conversationId' : ?0 }", sort = "{ 'chatTimestamp' : -1 }")
+    List<ChatMessage> findLatestMessage(String conversationId);
 }

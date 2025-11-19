@@ -29,8 +29,11 @@ public class SocketHandler {
     WebSocketService webSocketService;
     @OnConnect
     public void onSocketIOServer(SocketIOClient client){
+        log.info("pppppp");
         var token= client.getHandshakeData().getSingleUrlParam("token");
+        log.info("token:{} ",token);
         var check=identityService.introspect(IntrospectRequest.builder().token(token).build());
+        log.info("check:{}",check);
         if(check.isValid()) {
             log.info("userID: {}",check.getUserId());
             WebSocketSession webSocketSession= WebSocketSession.builder()

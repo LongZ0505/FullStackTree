@@ -18,27 +18,29 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequestMapping("/conversations")
+    @RequestMapping("/conversations")
 public class ConversationController {
     ConversationService conversationService;
-        @GetMapping("/userId/{userId}")
+    @GetMapping("/userId/{userId}")
     public ApiResponse<List<ConversationResponse>> fetchSessionsByUserId(@PathVariable("userId") String userId){
         return  ApiResponse.<List<ConversationResponse>>builder()
                 .result(conversationService.fetchSessionsByUserId(userId))
                 .build();
     }
 
-//    @GetMapping("/conversationId/{conversationId}")
-//    public ApiResponse<ConversationResponse> getConversationById(@PathVariable("conversationId") String conversationId){
-//        return ApiResponse.<ConversationResponse>builder()
-//                .result(conversationService.getById(conversationId))
-//                .build();
-//    }
+    @GetMapping("/conversationId/{conversationId}")
+    public ApiResponse<ConversationResponse> getConversationById(@PathVariable("conversationId") String conversationId){
+        log.info(conversationId);
+        return ApiResponse.<ConversationResponse>builder()
+                .result(conversationService.getConversationById(conversationId))
+                .build();
+    }
 
-//
+
     @PostMapping("/conversation")
     public ApiResponse<?> createSession(@RequestBody CreationConversationRequest request) throws JsonProcessingException {
-      return ApiResponse.builder()
+        log.info("request: {}",request);
+            return ApiResponse.builder()
               .result(conversationService.create(request))
               .build();
     }

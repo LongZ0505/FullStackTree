@@ -14,6 +14,6 @@ import java.util.List;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CreationConversationRequest {
-    List<Integer> participantIds;
+    List<String> participantIds;
     Instant createdDate;
 }

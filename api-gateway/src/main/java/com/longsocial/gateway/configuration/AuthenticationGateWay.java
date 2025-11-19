@@ -37,7 +37,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PACKAGE, makeFinal = true)
 public class AuthenticationGateWay implements GlobalFilter, Ordered {
     @NonFinal
-    private String[] PUBLIC_ENTRYPOINT= {"/identity/.*","/userNode","/follow/.*"};
+    private String[] PUBLIC_ENTRYPOINT= {"/identity/.*","/userNode","/follow/.*","/chat/.*"};
     IdentityService identityService;
     ObjectMapper objectMapper;
     @Value("${app.api-prefix}")

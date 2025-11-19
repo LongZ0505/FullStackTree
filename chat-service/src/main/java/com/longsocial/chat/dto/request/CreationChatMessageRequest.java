@@ -13,7 +13,7 @@ import java.time.Instant;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CreationChatMessageRequest {
     String conversationId;
-    Integer senderId;
+    String senderId;
     String message;
     Instant chatTimestamp;
 }

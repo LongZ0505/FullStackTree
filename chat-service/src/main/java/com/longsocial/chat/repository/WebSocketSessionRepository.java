@@ -13,5 +13,5 @@ import java.util.List;
 public interface WebSocketSessionRepository extends MongoRepository<WebSocketSession,String> {
     void deleteBySocketSessionId(String SessionId);
     @Query("{'userId' : {$in:?0}}")
-    List<WebSocketSession> findAllByUserId(List<Integer> userIds);
+    List<WebSocketSession> findAllByUserId(List<String> userIds);
 }

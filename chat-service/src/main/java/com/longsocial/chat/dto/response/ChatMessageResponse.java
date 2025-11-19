@@ -13,7 +13,7 @@ import java.time.Instant;
 public class ChatMessageResponse {
     String chatId;
     String conversationId;
-    Integer userId;
+    String userId;
     String message;
     Instant chatTimestamp;
 }

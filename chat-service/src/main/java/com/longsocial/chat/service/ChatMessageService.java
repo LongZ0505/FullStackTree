@@ -40,47 +40,48 @@ public class ChatMessageService {
     ChatMessageMapper chatMessageMapper;
     ObjectMapper objectMapper;
     WebSocketSessionRepository webSocketSessionRepository;
-//    public String create(CreationChatMessageRequest request) {
-//        var userId= SecurityContextHolder.getContext().getAuthentication().getName();
-//        if(Integer.parseInt(userId)!=request.getSenderId())
-//            throw new AppException(ErrorCode.UNAUTHENTICATED);
-//        var conversation=conversationRepository.findById(request.getConversationId())
-//                .orElseThrow(()->new AppException(ErrorCode.CONVERSATION_NOT_EXISTED));
-//        if(conversation.getParticipants().stream().noneMatch(participantInfo
-//                -> participantInfo.getUserId()==request.getSenderId()))
-//            throw new AppException(ErrorCode.UNAUTHENTICATED);
-//        var chat= ChatMessage.builder()
-//                .userId(request.getSenderId())
-//                .message(request.getMessage())
-//                .chatTimestamp(request.getChatTimestamp())
-//                .conversationId(request.getConversationId())
-//                .build();
-//        var message=chatMessageRepository.save(chat);
-//        var participantsId=conversation.getParticipants().stream().map(ParticipantInfo::getUserId).toList();
-//        Map<String, WebSocketSession> userIds=webSocketSessionRepository.findAllByUserId(participantsId)
-//                .stream().collect(Collectors.
-//                        toMap(WebSocketSession::getSocketSessionId,Function.identity()));
-//        socketIOServer.getAllClients().forEach(client -> {
-//                var response=userIds.get(client.getSessionId().toString());
-//                if(!Objects.isNull(response)){
-//                    try {
-//                        var beSend= objectMapper.writeValueAsString(message);
-//
-//                        client.sendEvent("message",beSend);
-//                        log.info(beSend);
-//                    } catch (JsonProcessingException e) {
-//                        throw new RuntimeException(e);
-//                    };
-//                }
-//
-//    });
-//
-//        return "done";
-//    }
+    public String create(CreationChatMessageRequest request) {
+        var userId= SecurityContextHolder.getContext().getAuthentication().getName();
+        if(!userId.equals(request.getSenderId()))
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        var conversation=conversationRepository.findById(request.getConversationId())
+                .orElseThrow(()->new AppException(ErrorCode.CONVERSATION_NOT_EXISTED));
+        if(conversation.getParticipants().stream().noneMatch(participantInfo
+                -> participantInfo.getUserId().equals(request.getSenderId())))
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        var chat= ChatMessage.builder()
+                .userId(request.getSenderId())
+                .message(request.getMessage())
+                .chatTimestamp(request.getChatTimestamp())
+                .conversationId(request.getConversationId())
+                .build();
+        var message=chatMessageRepository.save(chat);
+        var participantsId=conversation.getParticipants().stream().map(ParticipantInfo::getUserId).toList();
+        Map<String, WebSocketSession> userIds=webSocketSessionRepository.findAllByUserId(participantsId)
+                .stream().collect(Collectors.
+                        toMap(WebSocketSession::getSocketSessionId,Function.identity()));
+        socketIOServer.getAllClients().forEach(client -> {
+            log.info("Connecting");
+                var response=userIds.get(client.getSessionId().toString());
+                if(!Objects.isNull(response)){
+                    try {
+                        var beSend= objectMapper.writeValueAsString(message);
+                        client.sendEvent("message",beSend);
+                        log.info(beSend);
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    };
+                }
+
+    });
+
+        return "done";
+    }
 
     public List<ChatMessageResponse> getByConversationId(String conversationId) {
        conversationRepository.findById(conversationId)
                 .orElseThrow(()->new AppException(ErrorCode.CONVERSATION_NOT_EXISTED));
+       log.info(conversationId);
         var lstChat=chatMessageRepository.findByConversationIdOrderByChatTimestampDesc(conversationId);
         return lstChat.stream().map(chatMessageMapper::toResponse).toList();
     }
@@ -88,7 +89,7 @@ public class ChatMessageService {
     public ChatMessageResponse getLatest(String conversationId) {
        conversationRepository.findById(conversationId)
                 .orElseThrow(()->new AppException(ErrorCode.CONVERSATION_NOT_EXISTED));
-        var lastest=chatMessageRepository.findByConversationIdOrderByChatTimestampDesc(conversationId);
+        var lastest=chatMessageRepository.findLatestMessage(conversationId);
         if(lastest.size()<1)
             throw new AppException(ErrorCode.CHAT_NOT_EXISTED);
         log.info("latest: {}",lastest.getFirst().toString());

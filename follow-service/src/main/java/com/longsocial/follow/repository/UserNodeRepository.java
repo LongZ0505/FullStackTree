@@ -96,5 +96,8 @@ public interface UserNodeRepository extends Neo4jRepository<UserNode, String> {
             ORDER BY u.generation asc;
             """)
     List<UserNode> findAllByGenerationAsc();
+
+    @Query("MATCH (u:IndividualsNode) WHERE toLower(u.name) CONTAINS toLower($query) RETURN u")
+    List<UserNode> selectAllByQuery(@Param("query") String query);
 }
 

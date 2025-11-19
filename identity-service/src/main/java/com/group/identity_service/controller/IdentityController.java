@@ -3,6 +3,7 @@ package com.group.identity_service.controller;
 import com.group.identity_service.dto.ApiResponse;
 import com.group.identity_service.dto.request.CreationRequest;
 import com.group.identity_service.dto.response.CreationResponse;
+import com.group.identity_service.dto.response.UserNodeResponse;
 import com.group.identity_service.service.IdentityService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -23,4 +24,5 @@ public class IdentityController {
                 .result(identityService.Register(request))
                 .build();
     }
+
 }

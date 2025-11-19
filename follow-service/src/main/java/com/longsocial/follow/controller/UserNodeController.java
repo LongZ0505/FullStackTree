@@ -7,6 +7,7 @@ import com.longsocial.follow.dto.request.UserNodeRequest;
 import com.longsocial.follow.dto.response.RelationResponse;
 import com.longsocial.follow.dto.response.TreeResponse;
 import com.longsocial.follow.dto.response.UserNodeResponse;
+import com.longsocial.follow.dto.response.UserResponse;
 import com.longsocial.follow.service.UserNodeService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -39,9 +40,9 @@ public class UserNodeController {
                 .build();
     }
     @GetMapping("/getNode/{userId}")
-    public ApiResponse<UserNodeResponse> getNode(@PathVariable("userId") String request){
+    public ApiResponse<UserResponse> getNode(@PathVariable("userId") String request){
         log.info(request.toString());
-        return ApiResponse.<UserNodeResponse>builder()
+        return ApiResponse.<UserResponse>builder()
                 .result(userNodeService.getNode(request))
                 .build();
     }
@@ -82,5 +83,11 @@ public class UserNodeController {
         return ApiResponse.builder()
                 .result("Deleted relation")
                 .build();
+    }
+    @GetMapping("/query/{query}")
+    public ApiResponse<List<UserResponse>> queryUser(@PathVariable("query") String query) {
+        return ApiResponse.<List<UserResponse>>builder()
+                .result(userNodeService.queryUser(query))
+                .build() ;
     }
 }

@@ -14,7 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
-    private static final String [] Public_EndPoints={
+    private static final String [] Public_EndPoints={"/conversations/**","/chats/**"
     };
     CustomDecoder customDecoder;
     @Bean

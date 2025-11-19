@@ -12,7 +12,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableMethodSecurity
 public class AppConfig {
-    private static final String [] Public_EndPoints={"/auth/login","users/register"
+    private static final String [] Public_EndPoints={"/auth/**","users/register"
     };
     CustomDecoder customDecoder;
     @Bean

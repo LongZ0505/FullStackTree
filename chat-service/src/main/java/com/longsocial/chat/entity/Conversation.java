@@ -17,7 +17,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Conversation {
     @MongoId
-    String id;
+    String   id;
 
     @Indexed(unique = true)
     String participantsHash;
