@@ -1,0 +1,75 @@
+.member-list-container {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 30px;
+  background: linear-gradient(135deg, #ffffff, #f8faff);
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.member-list-container:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+.member-list-container h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #0066cc;
+  letter-spacing: 1px;
+  position: relative;
+}
+
+.member-list-container h2::after {
+  content: "";
+  display: block;
+  width: 80px;
+  height: 3px;
+  background: #007bff;
+  margin: 10px auto 0;
+  border-radius: 3px;
+}
+
+.member-table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.member-table thead {
+  background: linear-gradient(90deg, #007bff, #0056d2);
+  color: #fff;
+}
+
+.member-table th,
+.member-table td {
+  padding: 14px 18px;
+  text-align: left;
+  border-bottom: 1px solid #e3e6eb;
+  font-size: 15px;
+}
+
+.member-table th {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.member-table tbody tr {
+  background: #fff;
+  transition: all 0.2s ease-in-out;
+}
+
+.member-table tbody tr:nth-child(even) {
+  background: #f9fbff;
+}
+
+.member-table tbody tr:hover {
+  background: #e8f2ff;
+  transform: scale(1.01);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}

@@ -1,0 +1,188 @@
+/* ==============================================
+   PHẦN 1: FIX LỖI CHIỀU CAO (QUAN TRỌNG NHẤT)
+   Phải đảm bảo tất cả các lớp vỏ bên ngoài đều cao 100%
+   ============================================== */
+
+/* Kế thừa chiều cao từ div style={{height: "90vh"}} trong JS */
+.messagePage_container, 
+.messagePage_main {
+    height: 100%;
+    width: 100%;
+}
+
+/* Flex container chia cột trái/phải */
+.messagePage_main2 {
+    display: flex;
+    height: 100%; /* Bắt buộc để cột con cao lên */
+    width: 100%;
+    overflow: hidden; /* Chặn thanh cuộn thừa của cả trang */
+}
+
+/* ==============================================
+   PHẦN 2: LAYOUT CỘT PHẢI (MESSAGE DETAIL)
+   ============================================== */
+
+.messagePage_right {
+    flex: 1; /* Tự động chiếm hết chiều rộng còn lại */
+    display: flex;
+    flex-direction: column; /* Xếp dọc: Header -> Body -> Footer */
+    height: 100%; /* Bắt buộc full chiều cao */
+    background-color: #fff;
+    min-width: 0; /* Fix lỗi layout flex bị tràn chiều ngang */
+}
+
+/* --- HEADER --- */
+.messagePage_right_up {
+    height: 60px;
+    border-bottom: 1px solid #dbdbdb;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    flex-shrink: 0; /* Không bị co lại */
+}
+
+.messagePage_right_up_left {
+    display: flex;
+    align-items: center;
+}
+
+.messagePage_right_up_right {
+    display: flex;
+    gap: 20px;
+    font-size: 24px;
+    color: #262626;
+}
+
+.icon-header {
+    cursor: pointer;
+}
+
+/* --- BODY (CHỨA TIN NHẮN VÀ INPUT) --- */
+.messagePage_right_down {
+    flex: 1; /* Chiếm TẤT CẢ khoảng trống còn lại */
+    display: flex;
+    flex-direction: column; /* Xếp dọc */
+    overflow: hidden; /* Quan trọng */
+    position: relative;
+}
+
+/* --- KHU VỰC TIN NHẮN (SCROLL) --- */
+.messagePage_right_down_chat {
+    flex: 1; /* Chiếm hết khoảng trống -> Đẩy Input xuống đáy */
+    overflow-y: auto; /* Scroll xuất hiện ở đây */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    scroll-behavior: smooth;
+}
+
+/* --- TIN NHẮN ITEM --- */
+.messagePage_time {
+    text-align: center;
+    font-size: 11px;
+    color: #8e8e8e;
+    margin-bottom: 5px;
+}
+
+.messagePage_self {
+    align-self: flex-end;
+    display: flex;
+    justify-content: flex-end;
+    max-width: 70%;
+}
+
+.box_self {
+    background-color: #0095f6; /* Màu xanh giống Messenger */
+    color: white;
+    padding: 10px 14px;
+    border-radius: 18px;
+    border-bottom-right-radius: 4px;
+    font-size: 15px;
+    word-wrap: break-word;
+}
+
+.messagePage_counterpart {
+    align-self: flex-start;
+    display: flex;
+    align-items: flex-end;
+    max-width: 70%;
+    gap: 8px;
+}
+
+.box_other {
+    background-color: #efefef;
+    color: black;
+    padding: 10px 14px;
+    border-radius: 18px;
+    border-bottom-left-radius: 4px;
+    font-size: 15px;
+    word-wrap: break-word;
+}
+
+/* --- FOOTER (INPUT) - LUÔN Ở ĐÁY --- */
+.messagePage_right_down_text {
+    padding: 20px;
+    border-top: 1px solid #dbdbdb;
+    background-color: #fff;
+    flex-shrink: 0; /* QUAN TRỌNG: Không bị co lại */
+    z-index: 10;
+}
+
+.messagePage_right_down_border {
+    border: 1px solid #dbdbdb;
+    border-radius: 22px;
+    padding: 5px 15px;
+    display: flex;
+    align-items: center;
+}
+
+.postCard_comment {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    position: relative;
+}
+
+.emoji-picker-container {
+    position: absolute;
+    bottom: 50px;
+    left: 0;
+    z-index: 10;
+}
+
+.postCard_commentEmoji {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.icon-smile {
+    font-size: 24px;
+    cursor: pointer;
+    margin-right: 10px;
+    color: #262626;
+}
+
+.postCard_commentInput {
+    border: none;
+    outline: none;
+    flex: 1;
+    font-size: 14px;
+    padding: 5px;
+}
+
+.btn-send {
+    border: none;
+    background: none;
+    color: #0095f6;
+    font-weight: 600;
+    cursor: pointer;
+    opacity: 0.4;
+    margin-left: 10px;
+}
+
+.btn-send.active {
+    opacity: 1;
+}

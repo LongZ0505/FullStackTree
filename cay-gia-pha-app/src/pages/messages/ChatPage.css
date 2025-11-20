@@ -1,0 +1,242 @@
+/* ChatPage.css */
+
+/* --- 1. Layout Tổng --- */
+.chat-container {
+  display: flex;
+  height: calc(100vh - 60px); /* Trừ đi chiều cao Navbar nếu có */
+  width: 100%;
+  background-color: #fff;
+  border-top: 1px solid #e0e0e0;
+  overflow: hidden;
+}
+
+/* --- 2. Sidebar (Cột trái) --- */
+.chat-sidebar {
+  width: 320px; /* Chiều rộng cố định cho danh sách chat */
+  border-right: 1px solid #dbdbdb;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+}
+
+.chat-sidebar h3 {
+  padding: 20px;
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  border-bottom: 1px solid #efefef;
+}
+
+.chat-sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto; /* Cho phép cuộn danh sách người dùng */
+  flex: 1;
+}
+
+.chat-sidebar li {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.chat-sidebar li:hover {
+  background-color: #fafafa;
+}
+
+.chat-sidebar li.active {
+  background-color: #efefef; /* Màu nền khi đang chọn */
+}
+
+/* Avatar trong sidebar */
+.sidebar-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #ddd; /* Màu nền nếu chưa có ảnh */
+  margin-right: 12px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #555;
+}
+
+.sidebar-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sidebar-info {
+  flex: 1;
+  overflow: hidden;
+}
+
+.sidebar-info .name {
+  font-weight: 600;
+  font-size: 15px;
+  color: #262626;
+  margin-bottom: 4px;
+}
+
+.sidebar-info .last-message {
+  font-size: 13px;
+  color: #8e8e8e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --- 3. Main Chat (Cột phải) --- */
+.chat-main {
+  flex: 1; /* Chiếm hết phần còn lại */
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+}
+
+/* Header tên người đang chat */
+.chat-header {
+  height: 60px;
+  border-bottom: 1px solid #dbdbdb;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+/* Khu vực hiển thị tin nhắn (Quan trọng) */
+.message-list {
+  flex: 1; /* Tự động giãn chiều cao */
+  overflow-y: auto; /* Chỉ cuộn khu vực này */
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background-color: #fff;
+}
+
+/* --- 4. Bong bóng chat --- */
+
+/* Wrapper cho tin nhắn nhận (để chứa avatar + tin nhắn) */
+.message-received-wrapper {
+  display: flex;
+  align-items: flex-end; /* Căn avatar xuống đáy dòng */
+  max-width: 70%;
+  align-self: flex-start;
+}
+
+.message-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #ddd;
+  margin-right: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+.message-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Kiểu chung cho bong bóng */
+.message-item {
+  padding: 10px 14px;
+  border-radius: 18px;
+  font-size: 15px;
+  line-height: 1.4;
+  position: relative;
+  word-wrap: break-word;
+  max-width: 100%; /* Đã được giới hạn bởi wrapper cha hoặc align-self */
+}
+
+/* Tin nhắn NHẬN (Received - Bên trái) */
+.message-item.received {
+  background-color: #efefef;
+  color: #262626;
+  border-bottom-left-radius: 4px; /* Bo góc nhỏ tạo hiệu ứng chat */
+}
+
+/* Tin nhắn GỬI (Sent - Bên phải) */
+.message-item.sent {
+  align-self: flex-end; /* Đẩy sang phải */
+  background-color: #0095f6; /* Màu xanh Messenger */
+  color: white;
+  border-bottom-right-radius: 4px;
+  max-width: 70%;
+}
+
+/* --- 5. Ô nhập tin nhắn --- */
+.message-input {
+  padding: 20px;
+  border-top: 1px solid #dbdbdb;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.message-input input {
+  flex: 1;
+  padding: 10px 15px;
+  border-radius: 22px;
+  border: 1px solid #dbdbdb;
+  outline: none;
+  background-color: #efefef;
+  font-size: 14px;
+}
+
+.message-input input:focus {
+  border-color: #a8a8a8;
+}
+
+.message-input button {
+  border: none;
+  background: none;
+  color: #0095f6;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+}
+.message-input button:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+/* --- 6. Màn hình trống (Chưa chọn chat) --- */
+.chat-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #262626;
+  font-size: 18px;
+}
+
+/* Tùy chỉnh thanh cuộn cho đẹp hơn */
+.message-list::-webkit-scrollbar,
+.chat-sidebar ul::-webkit-scrollbar {
+  width: 6px;
+}
+
+.message-list::-webkit-scrollbar-track,
+.chat-sidebar ul::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.message-list::-webkit-scrollbar-thumb,
+.chat-sidebar ul::-webkit-scrollbar-thumb {
+  background-color: #dbdbdb;
+  border-radius: 10px;
+}
