@@ -53,115 +53,125 @@ public class PostService {
     }
 
     public PostResponse newPost(CreationPostRequest request) {
-        var userId=Integer.parseInt(SecurityContextHolder.getContext()
-                .getAuthentication().getName());
-        var check=userClient.getUserById(userId);
-        if(Objects.isNull(check))
-            throw new AppException(ErrorCode.USER_NOT_EXISTED);
-        if(request.getUserId()!=userId)
+        var userId=SecurityContextHolder.getContext()
+                .getAuthentication().getName();
+//        var check=userClient.getUserById(userId);
+//        if(Objects.isNull(check))
+//            throw new AppException(ErrorCode.USER_NOT_EXISTED);
+        if(!request.getUserId().equals(userId))
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         var post = postMapper.toPost(request);
         post = postRepository.save(post);
-        return postMapper.toPostResponse(post);
+        var user=followClient.getByUserId(request.getUserId());
+        var response=postMapper.toPostResponse(post);
+        response.setName(user.getResult().getName());
+        return response;
     }
 
     public PostResponse getPostByIdentifier(String identifier) {
-        return postMapper.toPostResponse(postRepository.findByPostIdentifier(identifier));
+        return postMapper.toPostResponse(postRepository.findByPostIdentifier(identifier).get());
     }
 
-    public PostResponse getPostByPostId(@PathVariable("postId") String postId) {
-        var post = postRepository.findById(postId).orElseThrow(
-                () -> new AppException(ErrorCode.POST_NOT_EXISTED));
-        var userResponse = userClient.getUserById(post.getUserId());
-        var user = userResponse.getResult();
-        if (Objects.isNull(user))
-            throw new AppException(ErrorCode.USER_NOT_EXISTED);
-        var postResponse = postMapper.toPostResponse(post);
-        postResponse.setAvatar(user.getAvatar());
-        postResponse.setUserName(user.getUserName());
-        return postResponse;
+//    public PostResponse getPostByPostId(@PathVariable("postId") String postId) {
+//        var post = postRepository.findById(postId).orElseThrow(
+//                () -> new AppException(ErrorCode.POST_NOT_EXISTED));
+//        var userResponse = userClient.getUserById(post.getUserId());
+//        var user = userResponse.getResult();
+//        if (Objects.isNull(user))
+//            throw new AppException(ErrorCode.USER_NOT_EXISTED);
+//        var postResponse = postMapper.toPostResponse(post);
+//        postResponse.setAvatar(user.getAvatar());
+//        postResponse.setUserName(user.getUserName());
+//        return postResponse;
+//
+//    }
 
-    }
+//    public Post updateLike(String postId) {
+//        var post = postRepository.findById(postId).orElseThrow
+//                (() -> new AppException(ErrorCode.POST_NOT_EXISTED));
+//        post.increaseLikes();
+//        return postRepository.save(post);
+//    }
 
-    public Post updateLike(String postId) {
-        var post = postRepository.findById(postId).orElseThrow
+//    public Post updateComment(String postId) {
+//        var post = postRepository.findById(postId).orElseThrow
+//                (() -> new AppException(ErrorCode.POST_NOT_EXISTED));
+//        post.increaseComments();
+//        return postRepository.save(post);
+//    }
+
+//    public Post updateUnLike(String postId) {
+//        var post = postRepository.findById(postId).orElseThrow
+//                (() -> new AppException(ErrorCode.POST_NOT_EXISTED));
+//        post.decreaseLikes();
+//        return postRepository.save(post);
+//    }
+
+    public PostResponse updatePost(UpdatePostRequest request) {
+        var userId=SecurityContextHolder.getContext().getAuthentication().getName();
+        var post = postRepository.findByPostIdentifier(request.getPostIdentifier()).orElseThrow
                 (() -> new AppException(ErrorCode.POST_NOT_EXISTED));
-        post.increaseLikes();
-        return postRepository.save(post);
-    }
-
-    public Post updateComment(String postId) {
-        var post = postRepository.findById(postId).orElseThrow
-                (() -> new AppException(ErrorCode.POST_NOT_EXISTED));
-        post.increaseComments();
-        return postRepository.save(post);
-    }
-
-    public Post updateUnLike(String postId) {
-        var post = postRepository.findById(postId).orElseThrow
-                (() -> new AppException(ErrorCode.POST_NOT_EXISTED));
-        post.decreaseLikes();
-        return postRepository.save(post);
-    }
-
-    public String updatePost(UpdatePostRequest request) {
-        var userId=Integer.parseInt(SecurityContextHolder.getContext()
-                .getAuthentication().getName());
-        var check=userClient.getUserById(userId);
-        if(Objects.isNull(check))
-            throw new AppException(ErrorCode.USER_NOT_EXISTED);
-        var post = postRepository.findById(request.getPostId()).orElseThrow
-                (() -> new AppException(ErrorCode.POST_NOT_EXISTED));
-        if(post.getUserId()!=userId)
+        if(!post.getUserId().equals(userId))
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         postMapper.toPostFromUpdatePostRequest(post, request);
+        log.info("post: {}",post);
         postRepository.save(post);
-        return "You have just completed to update your post";
+        var response= postMapper.toPostResponse(post);
+        response.setName(followClient.getByUserId(userId).getResult().getName());
+        return response;
     }
 
-    public String deletePost(String postId) {
-        var post = postRepository.findById(postId).orElseThrow
+    public String deletePost(String postIdentifier) {
+        var post = postRepository.findByPostIdentifier(postIdentifier).orElseThrow
                 (() -> new AppException(ErrorCode.POST_NOT_EXISTED));
         postRepository.delete(post);
         return "You have just completed to delete your post";
     }
 
-    public List<PostResponse> getPostFollowees(Integer userId,
-                                               Integer startIndex, Integer limit) {
-        var lstFollowees = followClient.getFollowees(userId);
-        var lstIdFollowees = lstFollowees.getResult().stream().map(UserNodeResponse::getUserId).toList();
-        log.info(lstIdFollowees.toString());
-        Pageable pageable = PageRequest.of(startIndex, limit, Sort.by(Sort.Direction.DESC, "postDate"));
-        var lstPagePost = postRepository.findPostPageable(lstIdFollowees, pageable);
-        log.info("list Post of Followees: {}", lstPagePost.getContent().toString());
-        return lstPagePost.getContent().stream().map(post -> {
-            var postResponse = postMapper.toPostResponse(post);
-            postResponse.setPostDate(dateTimeFormatter.format(post.getPostDate()));
-            postResponse.setAvatar(userClient.getUserById(post.
-                    getUserId()).getResult().getAvatar());
-            postResponse.setUserName(userClient.getUserById(post.
-                    getUserId()).getResult().getUserName());
-            return postResponse;
+    public List<PostResponse> allPost() {
+        var lstPost=postRepository.findAll();
+        return lstPost.stream().map(post -> {
+            var user=followClient.getByUserId(post.getUserId()).getResult();
+            var response= postMapper.toPostResponse(post);
+            response.setName(user.getName());
+            return response;
         }).toList();
     }
 
-    public List<PostResponse> getAllPostExcludingSelf(Integer limit, Integer userId) {
-        var lstUser = userClient.getAllExcludingSelf(10, userId).getResult();
-        var lstId = lstUser.stream().map(UserResponse::getUserId).toList();
-        Pageable pageable = PageRequest.of(0, limit, Sort.Direction.DESC,
-                "postDate");
-        var lstPagePost = postRepository.
-                findPostPageable(lstId, pageable);
-        return lstPagePost.getContent().stream().map(post -> {
-            var postResponse = postMapper.toPostResponse(post);
-            postResponse.setPostDate(dateTimeFormatter.format(post.getPostDate()));
-            postResponse.setAvatar(userClient.getUserById(post.
-                    getUserId()).getResult().getAvatar());
-            postResponse.setUserName(userClient.getUserById(post.
-                    getUserId()).getResult().getUserName());
-            return postResponse;
-        }).toList();
-    }
+//    public List<PostResponse> getPostFollowees(Integer userId,
+//                                               Integer startIndex, Integer limit) {
+//        var lstFollowees = followClient.getFollowees(userId);
+//        var lstIdFollowees = lstFollowees.getResult().stream().map(UserNodeResponse::getUserId).toList();
+//        log.info(lstIdFollowees.toString());
+//        Pageable pageable = PageRequest.of(startIndex, limit, Sort.by(Sort.Direction.DESC, "postDate"));
+//        var lstPagePost = postRepository.findPostPageable(lstIdFollowees, pageable);
+//        log.info("list Post of Followees: {}", lstPagePost.getContent().toString());
+//        return lstPagePost.getContent().stream().map(post -> {
+//            var postResponse = postMapper.toPostResponse(post);
+//            postResponse.setPostDate(dateTimeFormatter.format(post.getPostDate()));
+//            postResponse.setAvatar(userClient.getUserById(post.
+//                    getUserId()).getResult().getAvatar());
+//            postResponse.setUserName(userClient.getUserById(post.
+//                    getUserId()).getResult().getUserName());
+//            return postResponse;
+//        }).toList();
+//    }
+
+//    public List<PostResponse> getAllPostExcludingSelf(Integer limit, Integer userId) {
+//        var lstUser = userClient.getAllExcludingSelf(10, userId).getResult();
+//        var lstId = lstUser.stream().map(UserResponse::getUserId).toList();
+//        Pageable pageable = PageRequest.of(0, limit, Sort.Direction.DESC,
+//                "postDate");
+//        var lstPagePost = postRepository.
+//                findPostPageable(lstId, pageable);
+//        return lstPagePost.getContent().stream().map(post -> {
+//            var postResponse = postMapper.toPostResponse(post);
+//            postResponse.setPostDate(dateTimeFormatter.format(post.getPostDate()));
+//            postResponse.setUserName(userClient.getUserById(post.
+//                    getUserId()).getResult().getUserName());
+//            return postResponse;
+//        }).toList();
+//    }
 
 //    public List<PostResponse> getFavoritePosts(Integer userId, Integer startIndex, Integer limit) {
 //        var lstSaved = saveService.getSavedPosts(userId);
@@ -182,18 +192,18 @@ public class PostService {
 
  //   }
 
-    public List<PostResponse> getRandomPosts(Integer limit) {
-        var lstUser = userClient.getRandomUsers(limit).getResult();
-        var lstUserId = lstUser.stream().map(UserResponse::getUserId).toList();
-        Pageable pageable = PageRequest.of(0, limit, Sort.Direction.DESC, "postDate");
-        var lstPostPageable = postRepository.findPostPageable(lstUserId, pageable);
-        return lstPostPageable.getContent().stream().map(post -> {
-            var postResponse = postMapper.toPostResponse(post);
-            postResponse.setAvatar(userClient.getUserById(post.getUserId()).getResult().getAvatar());
-            postResponse.setUserName(userClient.getUserById(post.getUserId()).getResult().getUserName());
-            return postResponse;
-        }).toList();
-    }
+//    public List<PostResponse> getRandomPosts(Integer limit) {
+//        var lstUser = userClient.getRandomUsers(limit).getResult();
+//        var lstUserId = lstUser.stream().map(UserResponse::getUserId).toList();
+//        Pageable pageable = PageRequest.of(0, limit, Sort.Direction.DESC, "postDate");
+//        var lstPostPageable = postRepository.findPostPageable(lstUserId, pageable);
+//        return lstPostPageable.getContent().stream().map(post -> {
+//            var postResponse = postMapper.toPostResponse(post);
+//            postResponse.setAvatar(userClient.getUserById(post.getUserId()).getResult().getAvatar());
+//            postResponse.setUserName(userClient.getUserById(post.getUserId()).getResult().getUserName());
+//            return postResponse;
+//        }).toList();
+//    }
 
 //    public List<PostResponse> getSavedPosts(Integer userId) {
 //        var lstsaved = saveService.getSavedPosts(userId);

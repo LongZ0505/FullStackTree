@@ -7,7 +7,7 @@ spring:
     name: post-service
   data:
     mongodb:
-      uri: mongodb://root:root@localhost:27017/post-serviceSocial?authSource=admin
+      uri: mongodb://root:root@localhost:27017/post-Tree?authSource=admin
 app:
   services:
     identity: http://localhost:8080/identity

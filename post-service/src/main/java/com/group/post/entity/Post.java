@@ -17,22 +17,22 @@ public class Post {
     String postId;
     String postIdentifier;
     String imageUrl;
-    int userId;
+    String userId;
     Instant postDate;
-    String postLocation;
-    String postCaption;
-    String postAlt;
-    int postComments;
-    int postLikes;
-    boolean allowComment;
-    boolean allowLike;
-    public void increaseLikes(){
-        this.postLikes+=1;
-    }
-    public void increaseComments(){
-        this.postComments+=1;
-    }
-    public void decreaseLikes(){
-        this.postLikes-=1;
-    }
+    String title;
+    String content;
+//    String postAlt;
+//    int postComments;
+//    int postLikes;
+//    boolean allowComment;
+//    boolean allowLike;
+//    public void increaseLikes(){
+//        this.postLikes+=1;
+//    }
+//    public void increaseComments(){
+//        this.postComments+=1;
+//    }
+//    public void decreaseLikes(){
+//        this.postLikes-=1;
+//    }
 }

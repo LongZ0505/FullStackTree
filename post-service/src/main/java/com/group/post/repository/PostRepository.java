@@ -8,11 +8,12 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PostRepository extends MongoRepository<Post, String> {
     List<Post>findALlByUserId(Integer id);
-    Post findByPostIdentifier(String postIdentifier);
+    Optional<Post> findByPostIdentifier(String postIdentifier);
     @Query("{'userId': {$in:?0}}")
     Page<Post> findPostPageable(List<Integer> userId, Pageable pageable);
     @Query("{'_id': {$in:?0}}")

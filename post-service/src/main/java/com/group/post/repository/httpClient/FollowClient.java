@@ -13,6 +13,6 @@ import java.util.List;
 @FeignClient(name = "follow-client", url = "${app.services.follow}",
         configuration = AuthenticationRequestInterceptor.class)
 public interface FollowClient {
-    @GetMapping(value = "/follows/getFollowees/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ApiResponse<List<UserNodeResponse>> getFollowees(@PathVariable("userId") Integer request);
+    @GetMapping(value = "/userNode/getNode/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ApiResponse<UserNodeResponse> getByUserId(@PathVariable("userId") String request);
 }

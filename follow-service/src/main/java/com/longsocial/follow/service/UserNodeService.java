@@ -143,8 +143,12 @@ public class UserNodeService {
 
     public List<UserResponse> queryUser(String query) {
         var lstUser=userNodeRepository.selectAllByQuery(query);
-        return lstUser.stream().map(userNode ->
-                UserResponse.builder().name(userNode.getName())
-                        .userId(userNode.getUserId()).build()).toList();
+        return lstUser.stream().map(userNode ->{
+            if(userNode.getUserId()!=null){
+                return UserResponse.builder().name(userNode.getName())
+                        .userId(userNode.getUserId()).build();}
+            return null;
+                })
+                .toList();
     }
 }

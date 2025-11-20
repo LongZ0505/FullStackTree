@@ -15,7 +15,7 @@ import java.util.List;
         configuration = AuthenticationRequestInterceptor.class)
 public interface UserClient {
     @GetMapping(value = "/users/userId/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ApiResponse<UserResponse> getUserById(@PathVariable("userId") Integer userId);
+    public ApiResponse<UserResponse> getUserById(@PathVariable("userId") String userId);
 
     @GetMapping(value = "/users/userName/{userName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<UserResponse> getUserByUserName(@PathVariable("userName") String userName);

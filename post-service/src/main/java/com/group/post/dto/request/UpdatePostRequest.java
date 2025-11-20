@@ -9,9 +9,9 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UpdatePostRequest {
-    String postId;
-    String postLocation;
-    String postCaption;
-    String postAlt;
-    String allowComment;
+    String postIdentifier;
+    String imageUrl;
+    String content;
+    String title;
+    String postDate;
 }

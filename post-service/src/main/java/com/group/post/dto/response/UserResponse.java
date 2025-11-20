@@ -9,14 +9,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 public class UserResponse {
+    String id;
     Integer userId;
-    String userName;
-    String email;
-    String password;
-    String avatar;
-    String fullName;
-    String lastLogin;
-    String website;
-    String bio;
-    String phoneNumber;
+    String name;
 }

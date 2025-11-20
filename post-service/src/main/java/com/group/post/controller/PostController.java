@@ -21,35 +21,15 @@ import java.util.List;
 @RequestMapping("/posts")
 public class PostController {
     PostService postService;
-
-    @GetMapping("/getByUserID/{userId}")
-    public ApiResponse<GetPostResponse> getPostsById(@PathVariable("userId") Integer userId) {
-
-        return ApiResponse.<GetPostResponse>builder()
-                .result(postService.getPosByUserId(userId))
+    @GetMapping("/allPosts")
+    public ApiResponse<List<PostResponse>> allPost(){
+        return ApiResponse.<List<PostResponse>>builder()
+                .result(postService.allPost())
                 .build();
     }
 
-    @GetMapping("/getByUserName/{userName}")
-    public ApiResponse<GetPostResponse> getPostsByUserName(@PathVariable("userName") String userName) {
-        return ApiResponse.<GetPostResponse>builder()
-                .result(postService.getPosByUserName(userName))
-                .build();
-    }
 
-    @GetMapping("/getPostByIdentifier/{identifier}")
-    public ApiResponse<PostResponse> getPostByIdentifier(@PathVariable("identifier") String identifier) {
-        return ApiResponse.<PostResponse>builder()
-                .result(postService.getPostByIdentifier(identifier))
-                .build();
-    }
 
-    @GetMapping("/getPostByPostId/{postId}")
-    public ApiResponse<PostResponse> getPostByPostId(@PathVariable("postId") String postId) {
-        return ApiResponse.<PostResponse>builder()
-                .result(postService.getPostByPostId(postId))
-                .build();
-    }
 
     @PostMapping("/newPost")
     public ApiResponse<PostResponse> newPost(
@@ -60,14 +40,15 @@ public class PostController {
                 .build();
     }
 
-    @PutMapping("/updatePost")
-    public ApiResponse<?> updatePost(@RequestBody UpdatePostRequest request) {
-        return ApiResponse.builder()
-                .message(postService.updatePost(request))
+    @PutMapping()
+    public ApiResponse<PostResponse> updatePost(@RequestBody UpdatePostRequest request) {
+        log.info("request:{}",request);
+        return ApiResponse.<PostResponse>builder()
+                .result(postService.updatePost(request))
                 .build();
     }
 
-    @DeleteMapping("/deletePost/{postId}")
+    @DeleteMapping("/postIdentifier/{postId}")
     public ApiResponse<?> deletePost(@PathVariable("postId") String postId) {
         return ApiResponse.builder()
                 .message(postService.deletePost(postId))
@@ -75,31 +56,31 @@ public class PostController {
     }
 
 
-    @GetMapping("/friendPosts")
-    public ApiResponse<List<PostResponse>>
-    getFriendPosts(@RequestParam("userId") Integer userId,
-                   @RequestParam("startIndex") Integer startIndex,
-                   @RequestParam("limit") Integer limit) {
-
-        return ApiResponse.<List<PostResponse>>builder()
-                .result(postService.getPostFollowees(userId, startIndex, limit))
-                .build();
-    }
+//    @GetMapping("/friendPosts")
+//    public ApiResponse<List<PostResponse>>
+//    getFriendPosts(@RequestParam("userId") Integer userId,
+//                   @RequestParam("startIndex") Integer startIndex,
+//                   @RequestParam("limit") Integer limit) {
+//
+//        return ApiResponse.<List<PostResponse>>builder()
+//                .result(postService.getPostFollowees(userId, startIndex, limit))
+//                .build();
+//    }
 
     //  use pageable
-    @GetMapping("/randomPost")
-    public ApiResponse<List<PostResponse>> getSamplePostsExcludingSelf(@RequestParam("userId") Integer userId, @RequestParam("limit") Integer limit) {
-        return ApiResponse.<List<PostResponse>>builder()
-                .result(postService.getAllPostExcludingSelf(limit, userId))
-                .build();
-    }
-
-
-    @GetMapping("/random/{limit}")
-    public ApiResponse<List<PostResponse>> getRandomPosts(@PathVariable("limit") Integer limit){
-        return ApiResponse.<List<PostResponse>>builder()
-                .result(postService.getRandomPosts(limit))
-                .build();
-    }
+//    @GetMapping("/randomPost")
+//    public ApiResponse<List<PostResponse>> getSamplePostsExcludingSelf(@RequestParam("userId") Integer userId, @RequestParam("limit") Integer limit) {
+//        return ApiResponse.<List<PostResponse>>builder()
+//                .result(postService.getAllPostExcludingSelf(limit, userId))
+//                .build();
+//    }
+//
+//
+//    @GetMapping("/random/{limit}")
+//    public ApiResponse<List<PostResponse>> getRandomPosts(@PathVariable("limit") Integer limit){
+//        return ApiResponse.<List<PostResponse>>builder()
+//                .result(postService.getRandomPosts(limit))
+//                .build();
+//    }
 
 }

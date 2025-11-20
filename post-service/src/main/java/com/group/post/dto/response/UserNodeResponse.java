@@ -9,6 +9,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserNodeResponse {
-    String id;
-    Integer userId;
+    String userId;
+    String name;
 }

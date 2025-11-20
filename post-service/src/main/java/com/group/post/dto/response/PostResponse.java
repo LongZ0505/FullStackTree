@@ -12,18 +12,11 @@ import java.time.Instant;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PostResponse {
-    String postId;
     String postIdentifier;
     String imageUrl;
-    int userId;
-    String postDate;
-    String postLocation;
-    String postCaption;
-    String postAlt;
-    int postComments;
-    int postLikes;
-    boolean allowComment;
-    boolean allowLike;
-    String avatar;
-    String userName;
+    String userId;
+    Instant postDate;
+    String content;
+    String title;
+    String name;
 }
