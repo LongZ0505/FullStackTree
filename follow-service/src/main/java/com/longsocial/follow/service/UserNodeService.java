@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
+import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -26,10 +28,12 @@ import java.util.*;
 public class UserNodeService {
     UserNodeRepository userNodeRepository;
     UserNodeMapper userNodeMapper;
-
+    KafkaTemplate<String, String> kafkaTemplate;
     public UserNodeResponse createUserNode(UserNodeRequest request) {
         log.info(request.toString());
         var userNode = userNodeMapper.toUserNode(request);
+        kafkaTemplate.send("notification",
+                "admin has created node with name: "+userNode.getName());
         userNode = userNodeRepository.save(userNode);
         log.info(userNode.toString());
         return userNodeMapper.toUserNodeResponse(userNode);

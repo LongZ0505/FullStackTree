@@ -123,7 +123,7 @@ export const fetchConversationsByUserId = async (userId) =>{
     const response = await apiClient.get(`/chat/conversations/userId/${userId}`);
     return response.data; 
   } catch (error) {
-    console.error("Lỗi thêm thành viên:", error.response?.data);
+    console.error("Lỗi lấy đoạn chat:", error.response?.data);
     throw error;
   }
 }
@@ -206,6 +206,16 @@ export const updatePost = async (formData) => {
     return response.data;
   } catch (error) {
     console.error("Lỗi sửa bài viết:", error.response?.data);
+    throw error;
+  }
+};
+//------Notification
+export const getNotifications = async () => {
+  try {
+    const response = await apiClient.get(`/notification/allNotifications`);
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi lấy thông báo:", error.response?.data);
     throw error;
   }
 };

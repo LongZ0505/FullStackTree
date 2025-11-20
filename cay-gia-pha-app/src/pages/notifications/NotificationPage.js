@@ -1,77 +1,81 @@
 import React, { useState, useEffect } from 'react';
-// import { getNotifications } from '../../api/messageApi'; // Tạm thời tắt API
-import './NotificationPage.css'; // Tạo file CSS này
+// ⭐ Đảm bảo hàm này đã được import và định nghĩa đúng
+ 
+import './NotificationPage.css'; 
+import { getNotifications } from '../../api/apiConfig';
 
-// --- THÊM DỮ LIỆU DEMO ---
-const DEMO_NOTIFICATIONS = [
-  { 
-    id: 'n1', 
-    message: 'Nguyễn Văn Cường đã thêm một thành viên mới vào cây gia phả.', 
-    createdAt: '2025-10-23T14:30:00Z' // Sử dụng định dạng ISO string
-  },
-  { 
-    id: 'n2', 
-    message: 'Trần Thị Bình đã đăng một bài viết mới: "Thông báo họp họ".', 
-    createdAt: '2025-10-22T09:15:00Z' 
-  },
-  { 
-    id: 'n3', 
-    message: 'Bạn có tin nhắn mới từ Nguyễn Văn An.', 
-    createdAt: '2025-10-22T08:05:00Z' 
-  },
-  { 
-    id: 'n4', 
-    message: 'Chào mừng bạn đến với hệ thống Cây Gia Phả!', 
-    createdAt: '2025-10-21T12:00:00Z' 
-  },
-];
-// -------------------------
+// --- Dữ liệu DEMO đã được loại bỏ ---
 
 const NotificationPage = () => {
-  const [notifications, setNotifications] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    setLoading(true);
-    
-    // Tạm thời tắt API thật
-    // getNotifications()
-    //   .then(setNotifications)
-    //   .catch(console.error)
-    //   .finally(() => setLoading(false));
+  useEffect(() => {
+    const fetchNotifications = async () => {
+        setLoading(true);
+        setError(null);
 
-    // --- Giả lập API ---
-    setTimeout(() => {
-      setNotifications(DEMO_NOTIFICATIONS);
-      setLoading(false);
-    }, 500); // Giả lập 0.5 giây tải
-    
-  }, []);
+        try {
+            // ⭐ 1. Gọi API
+            const apiResponse = await getNotifications(); 
 
-  return (
-    <div className="notification-container">
-      <h2>🔔 Thông báo</h2>
-      {loading ? (
-        <p>Đang tải thông báo...</p>
-      ) : (
-        <ul className="notification-list">
-          {/* --- THÊM LOGIC KIỂM TRA MẢNG RỖNG --- */}
-          {notifications.length === 0 ? (
-            <p>Bạn không có thông báo nào.</p>
-          ) : (
-            notifications.map(notif => (
-              <li key={notif.id}>
-                <p>{notif.message}</p>
-                <span className="notif-date">
-                  {new Date(notif.createdAt).toLocaleString('vi-VN')}
-                </span>
-              </li>
-            ))
-          )}
-        </ul>
-      )}
-    </div>
-  );
+            // ⭐ 2. Lấy danh sách từ trường 'result' của ApiResponse
+            const notificationList = apiResponse.result || [];
+            
+            // ⭐ 3. Ánh xạ (Map) dữ liệu: Đặt message = content và thêm id/createdAt nếu API có
+            // Giả định: Mỗi NotificationResponse có ít nhất các trường id, content (message), createdAt
+            const formattedNotifications = notificationList.map(item => ({
+                id: item.id || item.someUniqueId, // Sử dụng ID duy nhất từ API
+                message: item.content || 'Nội dung thông báo trống', // LẤY TRƯỜNG CONTENT
+                createdAt: item.createAt || new Date().toISOString() // Sử dụng thời gian từ API
+            }));
+
+            setNotifications(formattedNotifications);
+            
+        } catch (err) {
+            console.error("Lỗi khi tải thông báo:", err);
+            setError("Không thể tải thông báo. Vui lòng kiểm tra kết nối API.");
+            setNotifications([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+    
+    fetchNotifications();
+  }, []); 
+
+  return (
+    <div className="notification-container">
+      <h2>🔔 Thông báo</h2>
+      {loading ? (
+        <p>Đang tải thông báo...</p>
+      ) : error ? ( 
+        <p className="error-message">❌ {error}</p>
+      ) : (
+        <ul className="notification-list">
+          {notifications.length === 0 ? (
+            <p>Bạn không có thông báo nào.</p>
+          ) : (
+            notifications.map(notif => (
+              <li key={notif.id} className="notification-item">
+                <p className="notif-message">
+                    {/* Thêm icon dựa trên nội dung message (là content từ API) */}
+                    {notif.message.includes('thành viên') ? '👨‍👩‍👧‍👦 ' : 
+                     notif.message.includes('bài viết') ? '📝 ' : 
+                     notif.message.includes('tin nhắn') ? '✉️ ' : 'ℹ️ '}
+                    {notif.message}
+                </p>
+                <span className="notif-date">
+                  {notif.createdAt}
+                </span>
+              </li>
+            ))
+          )}
+        </ul>
+      )}
+    </div>
+  );
 };
 
 export default NotificationPage;
